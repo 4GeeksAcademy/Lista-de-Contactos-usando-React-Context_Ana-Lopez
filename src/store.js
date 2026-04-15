@@ -1,6 +1,6 @@
 export const initialStore=()=>{
   return{
-     contacts [],
+     contacts:[],
   }
 }
 

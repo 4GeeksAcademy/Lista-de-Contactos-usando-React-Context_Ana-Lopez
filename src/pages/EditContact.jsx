@@ -2,11 +2,13 @@
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import React, { useState, useEffect } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
-export const AddContact = () => {
+export const EditContact = () => {
 
     const { store, dispatch } = useGlobalReducer()
     const navigate = useNavigate()
+    const { id } = useParams()
 
     const [data, setData] = useState({
         name: "",
@@ -14,31 +16,16 @@ export const AddContact = () => {
         email: "",
         address: ""
     })
-
-    const crearAgenda = async () => {
-        try {
-            const response = await fetch("https://playground.4geeks.com/contact/agendas/nahyah", {
-                method: "POST"
-            });
-
-            if (!response.ok) {
-                console.log("La agenda ya existe o hubo un error");
-                return;
-            }
-            const newAgenda = await response.json();
-            console.log(newAgenda);
-
-
-        } catch (error) {
-            console.error("Hubo un problema al crear la agenda", error);
-        }
-    };
-
+    
     useEffect(() => {
-        crearAgenda();
-    }, []);
+        const contacto = store.contacts.find(item => item.id == id);
 
+        if (contacto) {
+            setData(contacto);
+        }
+    }, [store.contacts, id]);
 
+    
     const formChange = (e) => {
         setData({ ...data, [e.target.name]: e.target.value })
     }
@@ -48,8 +35,8 @@ export const AddContact = () => {
         e.preventDefault()
 
         try {
-            const response = await fetch("https://playground.4geeks.com/contact/agendas/nahyah/contacts", {
-                method: "POST",
+            const response = await fetch("https://playground.4geeks.com/contact/agendas/nahyah/contacts/{id}", {
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -83,7 +70,7 @@ export const AddContact = () => {
     return (
 
         <div className="text-center mt-5 container">
-            <h1>Add a new Contact</h1>
+            <h1>Add a New Contact</h1>
 
 
             <form className="row g-3 " onSubmit={formSubmit}>

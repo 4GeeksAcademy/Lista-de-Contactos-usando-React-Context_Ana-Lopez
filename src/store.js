@@ -14,15 +14,18 @@ export default function storeReducer(store, action = {}) {
 
       };
 
-    case "update_contact":
+    case "set_contacts":
       return {
         ...store,
-        contacts: store.contacts.map(contact =>
-          contact.id === action.payload.id ? action.payload : contact
-        )
+        contacts: action.payload
       };
+
+
+
 
     default:
       throw Error('Unknown action.');
+
   }
+
 }

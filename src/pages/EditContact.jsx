@@ -18,11 +18,20 @@ export const EditContact = () => {
     })
     
     useEffect(() => {
-        const contacto = store.contacts.find(item => item.id == id);
+        const contacto = store.contacts.find(item => item.id === parseInt(id));
 
         if (contacto) {
-            setData(contacto);
-        }
+            setData({
+            name: contacto.name,
+            email: contacto.email,
+            phone: contacto.phone,
+            address: contacto.address
+        });
+        } else {
+        console.error("Contacto no encontrado");
+        alert("El contacto no existe")
+        navigate("/");
+    }
     }, [store.contacts, id]);
 
     
@@ -96,7 +105,7 @@ export const EditContact = () => {
                 </div>
 
                 <div className="col-12">
-                    <button type="submit" className="btn btn-primary">Send</button>
+                    <button type="submit" className="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>

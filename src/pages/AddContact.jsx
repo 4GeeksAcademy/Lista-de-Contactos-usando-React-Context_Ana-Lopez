@@ -82,8 +82,8 @@ export const AddContact = () => {
 
     return (
 
-        <div className="text-center mt-5 container">
-            <h1>Add a new Contact</h1>
+        <div className="mt-5 container">
+            <h1 className= "text-center">Add a new Contact</h1>
 
 
             <form className="row g-3 " onSubmit={formSubmit}>

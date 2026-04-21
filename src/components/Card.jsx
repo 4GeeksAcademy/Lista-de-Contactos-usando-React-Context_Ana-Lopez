@@ -5,6 +5,30 @@ export const Card = ({ contact }) => {
 
     const { store, dispatch } = useGlobalReducer();
 
+    const deleteContact = async () => {
+        try {
+            const response = await fetch(`https://playground.4geeks.com/contact/agendas/nahyah/contacts/${contact.id}`,
+
+                {
+                    method: "DELETE"
+
+                }
+
+            );
+            if (!response.ok) {
+                throw new Error("No se pudo borrar el contacto");
+
+            }
+            dispatch({
+                type: "delete_contact",
+                payload: contact.id
+            });
+        } catch (error) {
+            console.error("Hubo un problema al borrar el contacto", error);
+            alert("No se pudo borrar el contacto");
+        }
+    };
+
     return (
         <div className="card mb-3 shadow-sm">
             <div className="row g-0 align-items-center">
@@ -26,7 +50,7 @@ export const Card = ({ contact }) => {
                         </p>
                         <p className="card-text mb-1">
                             <i className="fa-solid fa-phone me-2"></i>
-                           {contact.phone}
+                            {contact.phone}
                         </p>
                         <p className="card-text mb-0">
                             <i className="fa-solid fa-envelope me-2"></i>
@@ -36,10 +60,11 @@ export const Card = ({ contact }) => {
                 </div>
 
                 <div className="col-md-2 d-flex justify-content-center gap-2 p-3">
-                    <button className="btn btn-link text-dark">
+                    <Link to={`/editcontact/${contact.id}`}>
                         <i className="fa-solid fa-pencil"></i>
-                    </button>
-                    <button className="btn btn-link text-dark">
+                    </Link>
+
+                    <button className="btn btn-link text-dark" onClick={deleteContact}>
                         <i className="fa-solid fa-trash"></i>
                     </button>
                 </div>

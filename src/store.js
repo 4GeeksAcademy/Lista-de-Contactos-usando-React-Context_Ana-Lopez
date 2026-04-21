@@ -20,6 +20,12 @@ export default function storeReducer(store, action = {}) {
         contacts: action.payload
       };
 
+    case "delete_contact":
+      return {
+        ...store,
+        contacts: store.contacts.filter(contact => contact.id !== action.payload)
+      };
+
 
 
 

@@ -1,14 +1,12 @@
-
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import React, { useState, useEffect } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const EditContact = () => {
 
     const { store, dispatch } = useGlobalReducer()
     const navigate = useNavigate()
-    const { id } = useParams()
+    const { contact_id } = useParams()
 
     const [data, setData] = useState({
         name: "",
@@ -16,99 +14,131 @@ export const EditContact = () => {
         email: "",
         address: ""
     })
-    
+
+    // 🔹 1. Cargar datos del contacto
     useEffect(() => {
-        const contacto = store.contacts.find(item => item.id === parseInt(id));
+        const contacto = store.contacts.find(
+            item => item.id === parseInt(contact_id)
+        );
 
         if (contacto) {
             setData({
-            name: contacto.name,
-            email: contacto.email,
-            phone: contacto.phone,
-            address: contacto.address
-        });
+                name: contacto.name,
+                phone: contacto.phone,
+                email: contacto.email,
+                address: contacto.address
+            });
         } else {
-        console.error("Contacto no encontrado");
-        alert("El contacto no existe")
-        navigate("/");
-    }
-    }, [store.contacts, id]);
+            alert("El contacto no existe");
+            navigate("/");
+        }
+    }, [store.contacts, contact_id, navigate]);
 
-    
+    // 🔹 2. Manejar cambios del input
     const formChange = (e) => {
         setData({ ...data, [e.target.name]: e.target.value })
     }
 
+    // 🔹 3. Enviar actualización
     const formSubmit = async (e) => {
-
-        e.preventDefault()
+        e.preventDefault();
 
         try {
-            const response = await fetch("https://playground.4geeks.com/contact/agendas/nahyah/contacts/{id}", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    ...data,
-                    agenda_slug: "nahyah"
-                })
-
-
-            });
+            const response = await fetch(
+                `https://playground.4geeks.com/contact/agendas/nahyah/contacts/${contact_id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        ...data,
+                        agenda_slug: "nahyah"
+                    })
+                }
+            );
 
             if (!response.ok) {
-                throw new Error("Error en la respuesta");
+                throw new Error("Error al actualizar");
             }
-            const newContact = await response.json();
-            console.log(newContact);
 
+            const updatedContact = await response.json();
+
+            // 🔹 4. Actualizar en el store
             dispatch({
-                type: "add_contact",
-                payload: newContact
-            })
-            navigate("/")
+                type: "set_contacts",
+                payload: store.contacts.map(contact =>
+                    contact.id === parseInt(contact_id)
+                        ? updatedContact
+                        : contact
+                )
+            });
 
+            navigate("/");
 
         } catch (error) {
-            console.error("Hubo un problema al crear el contacto", error);
-            alert("Hubo un error al crear el contacto nuevo")
+            console.error(error);
+            alert("Error al actualizar el contacto");
         }
     };
 
     return (
+        <div className="container mt-5">
+            <h1 className="text-center">Edit Contact</h1>
 
-        <div className="text-center mt-5 container">
-            <h1>Add a New Contact</h1>
-
-
-            <form className="row g-3 " onSubmit={formSubmit}>
+            <form className="row g-3" onSubmit={formSubmit}>
 
                 <div className="col-12">
-                    <label htmlFor="inputName" className="form-label">Name</label>
-                    <input type="text" className="form-control" id="inputName" value={data.name} onChange={formChange} name="name" />
+                    <label className="form-label">Name</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="name"
+                        value={data.name}
+                        onChange={formChange}
+                    />
                 </div>
 
                 <div className="col-md-6">
-                    <label htmlFor="inputPassword4" className="form-label">Phone</label>
-                    <input type="text" className="form-control" id="inputPhone" value={data.phone} onChange={formChange} name="phone" />
+                    <label className="form-label">Phone</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="phone"
+                        value={data.phone}
+                        onChange={formChange}
+                    />
                 </div>
 
                 <div className="col-md-6">
-                    <label htmlFor="inputEmail4" className="form-label">Email</label>
-                    <input type="email" className="form-control" id="inputEmail4" value={data.email} onChange={formChange} name="email" />
+                    <label className="form-label">Email</label>
+                    <input
+                        type="email"
+                        className="form-control"
+                        name="email"
+                        value={data.email}
+                        onChange={formChange}
+                    />
                 </div>
 
                 <div className="col-12">
-                    <label htmlFor="inputAddress" className="form-label">Address</label>
-                    <input type="text" className="form-control" id="inputAddress" value={data.address} onChange={formChange} name="address" />
+                    <label className="form-label">Address</label>
+                    <input
+                        type="text"
+                        className="form-control"
+                        name="address"
+                        value={data.address}
+                        onChange={formChange}
+                    />
                 </div>
 
                 <div className="col-12">
-                    <button type="submit" className="btn btn-primary">Save</button>
+                    <button type="submit" className="btn btn-success">
+                        Save Changes
+                    </button>
                 </div>
+
             </form>
         </div>
-
     );
-}; 
+};

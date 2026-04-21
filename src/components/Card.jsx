@@ -59,8 +59,8 @@ export const Card = ({ contact }) => {
                     </div>
                 </div>
 
-                <div className="col-md-2 d-flex justify-content-center gap-2 p-3">
-                    <Link to={`/editcontact/${contact.id}`}>
+                <div className="col-md-2 d-flex justify-content-center align-items-center gap-2 p-3">
+                    <Link to={`/editcontact/${contact.id}`}className="text-dark">
                         <i className="fa-solid fa-pencil"></i>
                     </Link>
 
